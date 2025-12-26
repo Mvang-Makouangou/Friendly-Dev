@@ -42,7 +42,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <NavBar />
-        <main className="max-w-6xl my-8 px-6">{children}</main>
+        <main className="max-w-6xl mx-auto my-8 px-6">{children}</main>
         <ScrollRestoration />
         <Scripts />
       </body>
