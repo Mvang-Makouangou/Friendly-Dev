@@ -1,4 +1,3 @@
-import Hero from "~/component/hero";
 import type { Route } from "./+types/index";
 
 export function meta({}: Route.MetaArgs) {
@@ -10,9 +9,5 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   console.log("home");
-  return (
-    <section>
-      <Hero name="MACK LAFOND" />
-    </section>
-  );
+  return <>Home Page</>;
 }
