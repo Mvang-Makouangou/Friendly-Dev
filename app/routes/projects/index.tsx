@@ -4,6 +4,14 @@ import type { Project } from "~/type";
 import ProjectCard from "~/component/ProjectCard";
 import { useState } from "react";
 import Pagination from "~/component/Pagination";
+import { AnimatePresence, motion } from "framer-motion";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "The Friendly Dev | Project" },
+    { name: "description", content: "Custom website developp" },
+  ];
+}
 
 export async function loader({
   request,
@@ -63,11 +71,22 @@ const ProjectsPage = ({ loaderData }: Route.ComponentProps) => {
           </button>
         ))}
       </div>
-      <div className="grid gap-6 sm:grid-cols-2 ">
-        {currentProjects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div layout className="grid gap-6 sm:grid-cols-2 ">
+          {currentProjects.map((project) => (
+            <motion.div
+              layout
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              key={project.id}
+            >
+              <ProjectCard project={project} />{" "}
+            </motion.div>
+          ))}
+        </motion.div>
+      </AnimatePresence>
       <Pagination
         totalPages={totalPages}
         currentPage={currentPage}
