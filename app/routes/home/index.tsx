@@ -19,7 +19,7 @@ export async function loader({
   const url = new URL(request.url);
 
   const [projectsRes, postRes] = await Promise.all([
-    fetch(`${import.meta.env.VITE_API_URL}/projects`),
+    fetch(`${import.meta.env.VITE_API_URL}/projects?populate=*`),
     fetch(new URL("posts-meta.json", url)),
   ]);
 
@@ -27,10 +27,24 @@ export async function loader({
     throw new Error("Failed to fetch projects or posts");
   }
 
-  const [projects, posts] = await Promise.all([
+  const [projectsJson, posts] = await Promise.all([
     projectsRes.json(),
     postRes.json(),
   ]);
+
+  const projects: Project[] = (projectsJson.data ?? []).map((item) => ({
+    id: item.id,
+    documentId: item.documentId,
+    title: item.title,
+    description: item.description,
+    image: item.image?.url
+      ? `${import.meta.env.VITE_STRAPI_URL}${item.image.url}`
+      : "/images/no-image.png",
+    url: item.url,
+    date: item.date,
+    category: item.category,
+    featured: item.featured,
+  }));
 
   return { projects, posts };
 }
