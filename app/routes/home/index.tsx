@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import type { Route } from "./+types/index";
 import FeaturedProjects from "~/components/FeaturedProjects";
 import AboutPreview from "~/components/AboutPreview";
-import type { Project } from "~/type";
+import type { Project, StrapiProject, StrapiResponse } from "~/type";
 import type { PostMeta } from "~/type";
 import LatestPosts from "~/components/LatestPost";
 
@@ -19,7 +19,9 @@ export async function loader({
   const url = new URL(request.url);
 
   const [projectsRes, postRes] = await Promise.all([
-    fetch(`${import.meta.env.VITE_API_URL}/projects?populate=*`),
+    fetch(
+      `${import.meta.env.VITE_API_URL}/projects?filters[featured][$eq]=true&populate=*`,
+    ),
     fetch(new URL("posts-meta.json", url)),
   ]);
 
@@ -27,12 +29,15 @@ export async function loader({
     throw new Error("Failed to fetch projects or posts");
   }
 
-  const [projectsJson, posts] = await Promise.all([
-    projectsRes.json(),
-    postRes.json(),
-  ]);
+  // const [projectsJson, posts] = await Promise.all([
+  //   projectsRes.json(),
+  //   postRes.json(),
+  // ]);
 
-  const projects: Project[] = (projectsJson.data ?? []).map((item) => ({
+  const projectJson: StrapiResponse<StrapiProject> = await projectsRes.json();
+  const postJson = await postRes.json();
+
+  const projects = projectJson.data.map((item) => ({
     id: item.id,
     documentId: item.documentId,
     title: item.title,
@@ -46,13 +51,27 @@ export async function loader({
     featured: item.featured,
   }));
 
-  return { projects, posts };
+  // const projects: Project[] = (projectsJson.data ?? []).map((item: any) => ({
+  //   id: item.id,
+  //   documentId: item.documentId,
+  //   title: item.title,
+  //   description: item.description,
+  //   image: item.image?.url
+  //     ? `${import.meta.env.VITE_STRAPI_URL}${item.image.url}`
+  //     : "/images/no-image.png",
+  //   url: item.url,
+  //   date: item.date,
+  //   category: item.category,
+  //   featured: item.featured,
+  // }));
+
+  return { projects, posts: postJson };
 }
 
 const HomePage = ({ loaderData }: Route.ComponentProps) => {
   const { projects, posts } = loaderData;
 
-  console.log(projects);
+  console.log(projects, posts);
 
   return (
     <>
