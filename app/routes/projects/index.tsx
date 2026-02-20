@@ -21,6 +21,8 @@ export async function loader({
   );
   const json: StrapiResponse<StrapiProject> = await res.json();
 
+  console.log("API URL:", import.meta.env.VITE_API_URL);
+
   const projects = json.data.map((item) => ({
     id: item.id,
     documentId: item.documentId,
