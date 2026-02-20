@@ -23,19 +23,33 @@ export async function loader({
 
   console.log("API URL:", import.meta.env.VITE_API_URL);
 
-  const projects = json.data.map((item) => ({
-    id: item.id,
-    documentId: item.documentId,
-    title: item.title,
-    description: item.description,
-    image: item.image?.url ? `${item.image.url}` : "/images/no-image.png",
-    url: item.url,
-    date: item.date,
-    category: item.category,
-    featured: item.featured,
-  }));
+  const projects = Array.isArray(json.data)
+    ? json.data.map((item: any) => ({
+        id: item.id,
+        documentId: item.documentId,
+        title: item.title,
+        description: item.description,
+        image: item.image?.url ?? "/images/no-image.png",
+        url: item.url,
+        date: item.date,
+        category: item.category,
+        featured: item.featured,
+      }))
+    : [];
 
-  return { projects: projects };
+  // const projects = json.data.map((item) => ({
+  //   id: item.id,
+  //   documentId: item.documentId,
+  //   title: item.title,
+  //   description: item.description,
+  //   image: item.image?.url ? `${item.image.url}` : "/images/no-image.png",
+  //   url: item.url,
+  //   date: item.date,
+  //   category: item.category,
+  //   featured: item.featured,
+  // }));
+
+  return { projects };
 }
 
 const ProjectsPage = ({ loaderData }: Route.ComponentProps) => {
@@ -43,7 +57,11 @@ const ProjectsPage = ({ loaderData }: Route.ComponentProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 4;
 
-  const { projects } = loaderData as { projects: Project[] };
+  // const { projects } = loaderData as { projects: Project[] };
+
+  const projects = Array.isArray(loaderData?.projects)
+    ? loaderData.projects
+    : [];
 
   // Get unique categories
   const categories = [

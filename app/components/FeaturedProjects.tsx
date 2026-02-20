@@ -6,8 +6,14 @@ type FeaturedProjectsProps = {
   count: number;
 };
 
-const FeaturedProjects = ({ projects, count = 4 }: FeaturedProjectsProps) => {
-  if (projects.length === 0) return null;
+const FeaturedProjects = ({
+  projects = [],
+  count = 4,
+}: FeaturedProjectsProps) => {
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
+  if (safeProjects.length === 0) return null;
+  // if (projects.length === 0) return null;
 
   return (
     <section>
@@ -15,8 +21,13 @@ const FeaturedProjects = ({ projects, count = 4 }: FeaturedProjectsProps) => {
         🌟 Featured Projects
       </h2>
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      {/* <div className="grid gap-6 sm:grid-cols-2">
         {projects.map((project) => (
+          <ProjectCard key={project.id} project={project} />
+        ))}
+      </div> */}
+      <div className="grid gap-6 sm:grid-cols-2">
+        {safeProjects.slice(0, count).map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}
       </div>
